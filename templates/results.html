@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Employee Hunter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --accent-light: #ff4da6;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --transition: all 0.3s ease;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--gradient);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, white, var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 300;
+            margin-top: 20px;
+        }
+        
+        /* Back Button */
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-5px);
+        }
+        
+        /* Search Query */
+        .search-query {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: var(--transition);
+        }
+        
+        .search-query:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .search-query h3 {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .query-text {
+            opacity: 0.9;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            padding: 15px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        /* Results Count */
+        .results-count {
+            color: white;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Candidates Grid */
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .candidate-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .candidate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+        }
+        
+        .candidate-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .candidate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .candidate-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .match-score {
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .match-score.high {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+        
+        .match-score.medium {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+        
+        .match-score.low {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        .candidate-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            font-size: 0.95rem;
+            padding: 8px 0;
+        }
+        
+        .detail-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+        
+        .skills-section {
+            margin-bottom: 20px;
+        }
+        
+        .skills-label {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .skill-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .skill-tag:hover {
+            transform: scale(1.05);
+            background: #bbdefb;
+        }
+        
+        .view-profile {
+            background: var(--gradient-accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .view-profile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(247, 37, 133, 0.5);
+        }
+        
+        /* No Results */
+        .no-results {
+            text-align: center;
+            color: white;
+            padding: 80px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .no-results-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .no-results h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .no-results p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Actions */
+        .actions {
+            text-align: center;
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 14px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* Email Badge */
+        .email-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .valid-email {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .candidate-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <div class="header">
+            <h1><i class="fas fa-search"></i> Matching Candidates</h1>
+            <p>AI-powered candidate matches for your job description</p>
+        </div>
+
+        <div class="search-query">
+            <h3><i class="fas fa-file-alt"></i> Job Description:</h3>
+            <div class="query-text">{{ query }}</div>
+        </div>
+
+        {% if results and results.documents and results.documents[0] and results.documents[0]|length > 0 %}
+        <div class="results-count">
+            <i class="fas fa-users"></i> Found {{ results.documents[0]|length }} matching candidates
+        </div>
+
+        <div class="candidates-grid">
+            {% for i in range(results.documents[0]|length) %}
+            {% set metadata = results.metadatas[0][i] %}
+            {% set score = results.distances[0][i] %}
+            {% set has_valid_email = metadata.email and '@' in metadata.email and ('.com' in metadata.email or '.org' in metadata.email or '.net' in metadata.email or '.in' in metadata.email or '.io' in metadata.email) %}
+            
+            <div class="candidate-card" onclick="viewProfile('{{ i }}')">
+                <div class="candidate-header">
+                    <div class="candidate-name">
+                        {{ metadata.candidate_name if metadata.candidate_name else "Unknown Candidate" }}
+                        {% if has_valid_email %}
+                            <span class="email-badge" title="Valid email detected">
+                                <i class="fas fa-envelope"></i> Valid
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="match-score 
+                        {% if score >= 80 %}high
+                        {% elif score >= 60 %}medium
+                        {% else %}low
+                        {% endif %}">
+                        Match: {{ score }}%
+                    </div>
+                </div>
+                
+                <div class="candidate-details">
+                    <div class="detail-item">
+                        <i class="fas fa-envelope"></i>
+                        <span class="{% if has_valid_email %}valid-email{% endif %}">
+                            {% if has_valid_email %}
+                                {{ metadata.email }}
+                            {% else %}
+                                Email in CV
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span>{{ metadata.current_role if metadata.current_role else 'Professional' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ metadata.experience if metadata.experience else 'Experience in CV' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ metadata.location if metadata.location else 'Location in CV' }}</span>
+                    </div>
+                </div>
+                
+                <div class="skills-section">
+                    <div class="skills-label">Skills:</div>
+                    <div class="skills-list">
+                        {% if metadata.skills and metadata.skills != "Technical Skills" %}
+                            {% for skill in metadata.skills.split(', ') %}
+                                {% if skill and skill != "Technical Skills" %}
+                                    <span class="skill-tag">{{ skill }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="skill-tag">Technical Skills</span>
+                            <span class="skill-tag">Professional</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <button class="view-profile" onclick="event.stopPropagation(); viewProfile('{{ i }}')">
+                    <i class="fas fa-user-circle"></i> View Full Profile
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <div class="no-results-icon">🔍</div>
+            <h2>No matching candidates found</h2>
+            <p>Try modifying your job description or upload more CVs to the database.</p>
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <a href="/" class="btn-secondary">
+                <i class="fas fa-search"></i> New Search
+            </a>
+            <a href="/upload" class="btn-secondary">
+                <i class="fas fa-file-upload"></i> Upload More CVs
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function viewProfile(index) {
+            console.log("Viewing profile for index:", index);
+            // Directly pass index as URL parameter
+            window.location.href = '/candidate_profile?index=' + index;
+        }
+    </script>
+</body>
+</html>
